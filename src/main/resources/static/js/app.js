@@ -477,21 +477,304 @@ document.addEventListener('DOMContentLoaded', () => {
         if (codeEditorInput) codeEditorInput.value = (template || '').replace(/\\n/g, '\n');
     }
 
+    const DEFAULT_INTERVIEW_QUESTIONS = [
+        {
+            id: 1,
+            title: "1. Add 2 Integers",
+            topic: "Algorithms",
+            category: "Coding",
+            difficulty: "Easy",
+            company: "Tap Academy",
+            questionText: "Given two integers a and b, return the sum of the two integers.",
+            answerExplanation: "Add the two integers directly using arithmetic addition in O(1) time complexity.",
+            codeSnippet: "import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner scanner = new Scanner(System.in);\n        int a = scanner.nextInt();\n        int b = scanner.nextInt();\n        System.out.println(a + b);\n    }\n}",
+            sampleTestCase: "Input: 12 8 -> Output: 20"
+        },
+        {
+            id: 2,
+            title: "2. Adding Three Integers",
+            topic: "Algorithms",
+            category: "Coding",
+            difficulty: "Easy",
+            company: "Tap Academy",
+            questionText: "Read three integers and print their total sum.",
+            answerExplanation: "Sum all three inputs in O(1) time complexity.",
+            codeSnippet: "import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner scanner = new Scanner(System.in);\n        int a = scanner.nextInt();\n        int b = scanner.nextInt();\n        int c = scanner.nextInt();\n        System.out.println(a + b + c);\n    }\n}",
+            sampleTestCase: "Input: 1 2 3 -> Output: 6"
+        },
+        {
+            id: 3,
+            title: "3. Product of Three",
+            topic: "Algorithms",
+            category: "Coding",
+            difficulty: "Easy",
+            company: "Tap Academy",
+            questionText: "Read three integers and calculate their product.",
+            answerExplanation: "Multiply the three integers directly in O(1) time.",
+            codeSnippet: "import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner scanner = new Scanner(System.in);\n        int a = scanner.nextInt();\n        int b = scanner.nextInt();\n        int c = scanner.nextInt();\n        System.out.println(a * b * c);\n    }\n}",
+            sampleTestCase: "Input: 2 3 4 -> Output: 24"
+        },
+        {
+            id: 4,
+            title: "4. Multiple of 5",
+            topic: "Algorithms",
+            category: "Coding",
+            difficulty: "Easy",
+            company: "Tap Academy",
+            questionText: "Determine whether the given number is a multiple of 5 or not.",
+            answerExplanation: "Use modulo operator n % 5 == 0.",
+            codeSnippet: "import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner scanner = new Scanner(System.in);\n        int n = scanner.nextInt();\n        System.out.println(n % 5 == 0 ? \"Yes\" : \"No\");\n    }\n}",
+            sampleTestCase: "Input: 24 -> Output: No"
+        },
+        {
+            id: 5,
+            title: "5. Two Sum - Find Indices matching Target Sum",
+            topic: "Arrays",
+            category: "Coding",
+            difficulty: "Easy",
+            company: "Microsoft",
+            questionText: "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
+            answerExplanation: "Optimal solution uses a HashMap to store complements in O(N) time and O(N) space.",
+            codeSnippet: "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int target = sc.nextInt();\n        Map<Integer, Integer> map = new HashMap<>();\n        int idx = 0;\n        while (sc.hasNextInt()) {\n            int num = sc.nextInt();\n            int comp = target - num;\n            if (map.containsKey(comp)) {\n                System.out.println(map.get(comp) + \" \" + idx);\n                return;\n            }\n            map.put(num, idx++);\n        }\n    }\n}",
+            sampleTestCase: "Input: target=9, nums=[2,7,11,15] -> Output: 0 1"
+        },
+        {
+            id: 6,
+            title: "6. Reverse a String in Place",
+            topic: "Strings",
+            category: "Coding",
+            difficulty: "Easy",
+            company: "Amazon",
+            questionText: "Write a function that reverses a string.",
+            answerExplanation: "Use two pointers from left and right moving inward, or StringBuilder.reverse().",
+            codeSnippet: "import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        String s = sc.next();\n        System.out.println(new StringBuilder(s).reverse().toString());\n    }\n}",
+            sampleTestCase: "Input: hello -> Output: olleh"
+        },
+        {
+            id: 7,
+            title: "7. Check Palindrome String / Number",
+            topic: "Strings",
+            category: "Coding",
+            difficulty: "Easy",
+            company: "Google",
+            questionText: "Check whether a given string reads the same backward as forward.",
+            answerExplanation: "Compare characters at index i and len-1-i, or compare string with its reversed copy.",
+            codeSnippet: "import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        String s = sc.next();\n        String rev = new StringBuilder(s).reverse().toString();\n        System.out.println(s.equals(rev));\n    }\n}",
+            sampleTestCase: "Input: racecar -> Output: true"
+        },
+        {
+            id: 8,
+            title: "8. FizzBuzz Classic Problem",
+            topic: "Algorithms",
+            category: "Coding",
+            difficulty: "Easy",
+            company: "Tap Academy",
+            questionText: "Print numbers from 1 to N. For multiples of 3 print Fizz, for 5 print Buzz, for both print FizzBuzz.",
+            answerExplanation: "Use modulo arithmetic for 15, 3, and 5.",
+            codeSnippet: "import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int n = sc.nextInt();\n        for (int i = 1; i <= n; i++) {\n            if (i % 15 == 0) System.out.print(\"FizzBuzz \");\n            else if (i % 3 == 0) System.out.print(\"Fizz \");\n            else if (i % 5 == 0) System.out.print(\"Buzz \");\n            else System.out.print(i + \" \");\n        }\n    }\n}",
+            sampleTestCase: "Input: 5 -> Output: 1 2 Fizz 4 Buzz"
+        },
+        {
+            id: 9,
+            title: "9. Valid Parentheses Matching with Stack",
+            topic: "Algorithms",
+            category: "Coding",
+            difficulty: "Easy",
+            company: "Meta",
+            questionText: "Given a string s containing just characters (), {}, [], determine if the input string is valid.",
+            answerExplanation: "Use a Stack LIFO data structure to match open and close brackets in O(N) time.",
+            codeSnippet: "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        String s = sc.next();\n        Stack<Character> st = new Stack<>();\n        for (char c : s.toCharArray()) {\n            if (c == '(') st.push(')');\n            else if (c == '{') st.push('}');\n            else if (c == '[') st.push(']');\n            else if (st.isEmpty() || st.pop() != c) { System.out.println(\"false\"); return; }\n        }\n        System.out.println(st.isEmpty());\n    }\n}",
+            sampleTestCase: "Input: ()[]{} -> Output: true"
+        },
+        {
+            id: 10,
+            title: "10. Maximum Subarray Sum - Kadane Algorithm",
+            topic: "Arrays",
+            category: "Coding",
+            difficulty: "Medium",
+            company: "Amazon",
+            questionText: "Find the contiguous subarray which has the largest sum and return its sum.",
+            answerExplanation: "Kadane Algorithm maintains max_ending_here and max_so_far in O(N) time complexity.",
+            codeSnippet: "import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int maxSoFar = Integer.MIN_VALUE, maxEnding = 0;\n        while (sc.hasNextInt()) {\n            int x = sc.nextInt();\n            maxEnding = Math.max(x, maxEnding + x);\n            maxSoFar = Math.max(maxSoFar, maxEnding);\n        }\n        System.out.println(maxSoFar);\n    }\n}",
+            sampleTestCase: "Input: -2 1 -3 4 -1 2 1 -5 4 -> Output: 6"
+        },
+        {
+            id: 11,
+            title: "11. Longest Substring Without Repeating Characters",
+            topic: "Strings",
+            category: "Coding",
+            difficulty: "Medium",
+            company: "Google",
+            questionText: "Given a string s, find the length of the longest substring without repeating characters.",
+            answerExplanation: "Sliding Window approach using a HashSet / HashMap in O(N) time complexity.",
+            codeSnippet: "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        String s = sc.next();\n        Set<Character> set = new HashSet<>();\n        int l = 0, maxLen = 0;\n        for (int r = 0; r < s.length(); r++) {\n            while (set.contains(s.charAt(r))) set.remove(s.charAt(l++));\n            set.add(s.charAt(r));\n            maxLen = Math.max(maxLen, r - l + 1);\n        }\n        System.out.println(maxLen);\n    }\n}",
+            sampleTestCase: "Input: abcabcbb -> Output: 3"
+        },
+        {
+            id: 12,
+            title: "12. Merge Two Sorted Lists",
+            topic: "Arrays",
+            category: "Coding",
+            difficulty: "Easy",
+            company: "Apple",
+            questionText: "Merge two sorted linked lists / arrays and return it as a new sorted list.",
+            answerExplanation: "Use two pointers to compare elements from both lists and build the merged list in O(N + M) time.",
+            codeSnippet: "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        List<Integer> list = new ArrayList<>();\n        while (sc.hasNextInt()) list.add(sc.nextInt());\n        Collections.sort(list);\n        for (int x : list) System.out.print(x + \" \");\n    }\n}",
+            sampleTestCase: "Input: 1 2 4 and 1 3 4 -> Output: 1 1 2 3 4 4"
+        },
+        {
+            id: 13,
+            title: "13. Difference between HashMap and ConcurrentHashMap in Java",
+            topic: "Java",
+            category: "Conceptual",
+            difficulty: "Medium",
+            company: "TechScale",
+            questionText: "Explain how HashMap works internally and why ConcurrentHashMap is preferred for high-concurrency multithreaded applications.",
+            answerExplanation: "HashMap is non-thread-safe. ConcurrentHashMap uses bucket-level locking (CAS operations and synchronized blocks on node heads) providing high concurrency thread safety.",
+            codeSnippet: "import java.util.concurrent.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        ConcurrentMap<String, Integer> map = new ConcurrentHashMap<>();\n        map.put(\"key\", 100);\n        map.computeIfPresent(\"key\", (k, v) -> v + 50);\n        System.out.println(\"Updated Value: \" + map.get(\"key\"));\n    }\n}",
+            sampleTestCase: "Concept: HashMap vs ConcurrentHashMap"
+        },
+        {
+            id: 14,
+            title: "14. Java 8 Streams API - Filter, Map, and Reduce",
+            topic: "Java",
+            category: "Framework",
+            difficulty: "Medium",
+            company: "Oracle",
+            questionText: "Demonstrate how Java 8 Streams API enables functional programming, lazy evaluation, and parallel processing.",
+            answerExplanation: "Streams process collections lazily through pipeline operations (intermediate filter/map and terminal collect/reduce). ParallelStreams utilize ForkJoinPool for multi-core speedup.",
+            codeSnippet: "import java.util.*;\nimport java.util.stream.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<String> names = List.of(\"Alex\", \"Bob\", \"Alice\", \"David\");\n        List<String> filtered = names.stream()\n            .filter(n -> n.startsWith(\"A\"))\n            .map(String::toUpperCase)\n            .collect(Collectors.toList());\n        System.out.println(filtered);\n    }\n}",
+            sampleTestCase: "Input: [Alex, Bob, Alice] -> Output: [ALEX, ALICE]"
+        },
+        {
+            id: 15,
+            title: "15. Java JVM Memory Management & Garbage Collection (G1GC, ZGC)",
+            topic: "Java",
+            category: "Architecture",
+            difficulty: "Hard",
+            company: "Netflix",
+            questionText: "Explain Heap Memory structure (Young Generation, Eden, Survivor, Tenured/Old Gen) and Garbage Collectors (G1GC vs ZGC).",
+            answerExplanation: "Java Heap memory is partitioned into Eden, S0/S1 Survivor spaces, and Old Generation. G1GC divides heap into regions to achieve predictable pause times. ZGC is an ultra-low latency Garbage Collector.",
+            codeSnippet: "public class Main {\n    public static void main(String[] args) {\n        Runtime runtime = Runtime.getRuntime();\n        System.out.println(\"Max Memory: \" + runtime.maxMemory() / (1024 * 1024) + \" MB\");\n        System.out.println(\"Free Memory: \" + runtime.freeMemory() / (1024 * 1024) + \" MB\");\n    }\n}",
+            sampleTestCase: "Concept: JVM Heap & Garbage Collector Tuning"
+        },
+        {
+            id: 16,
+            title: "16. How Spring Boot Dependency Injection & @Autowired Work",
+            topic: "Spring Boot",
+            category: "Architecture",
+            difficulty: "Medium",
+            company: "Apex Innovations",
+            questionText: "Explain Spring IoC (Inversion of Control) container, bean lifecycle, and dependency resolution with @Autowired vs Constructor Injection.",
+            answerExplanation: "Spring IoC container initializes and manages application beans. Constructor injection is preferred because it ensures immutability, prevents NPEs, and enables easier unit testing with Mockito.",
+            codeSnippet: "import org.springframework.stereotype.Service;\n\n@Service\npublic class UserService {\n    private final UserRepository userRepository;\n    public UserService(UserRepository userRepository) {\n        this.userRepository = userRepository;\n    }\n}",
+            sampleTestCase: "Concept: Constructor Injection in Spring Boot"
+        },
+        {
+            id: 17,
+            title: "17. Spring Boot Global Exception Handling with @ControllerAdvice",
+            topic: "Spring Boot",
+            category: "Architecture",
+            difficulty: "Medium",
+            company: "Microsoft",
+            questionText: "How to handle REST API exceptions globally in Spring Boot using @ControllerAdvice and @ExceptionHandler.",
+            answerExplanation: "@ControllerAdvice acts as an interceptor for exceptions thrown by Controllers, returning standardized Error DTO JSON responses with HTTP status codes (400, 404, 500).",
+            codeSnippet: "import org.springframework.web.bind.annotation.*;\nimport org.springframework.http.ResponseEntity;\n\n@RestControllerAdvice\npublic class GlobalExceptionHandler {\n    @ExceptionHandler(RuntimeException.class)\n    public ResponseEntity<String> handleNotFound(RuntimeException ex) {\n        return ResponseEntity.status(404).body(ex.getMessage());\n    }\n}",
+            sampleTestCase: "Concept: RestControllerAdvice Global Handler"
+        },
+        {
+            id: 18,
+            title: "18. Find Nth Highest Salary in MySQL",
+            topic: "SQL",
+            category: "Database",
+            difficulty: "Hard",
+            company: "Oracle",
+            questionText: "Write a SQL query to get the Nth highest salary from the Employee table.",
+            answerExplanation: "Use DENSE_RANK() window function or LIMIT 1 OFFSET N-1 pattern to retrieve the exact Nth highest salary.",
+            codeSnippet: "SELECT DISTINCT salary \nFROM Employee \nORDER BY salary DESC \nLIMIT 1 OFFSET 1;",
+            sampleTestCase: "Input: N=2 -> Output: 2nd Highest Salary"
+        },
+        {
+            id: 19,
+            title: "19. SQL JOIN Types & Query Performance Optimization",
+            topic: "SQL",
+            category: "Database",
+            difficulty: "Medium",
+            company: "Amazon",
+            questionText: "Explain INNER, LEFT, RIGHT, and FULL OUTER JOINs and how B-Tree indexes optimize JOIN performance.",
+            answerExplanation: "JOIN operations combine rows from related tables. B-Tree indexes on Foreign Keys avoid full table scans and reduce JOIN complexity from O(N*M) to O(N log M).",
+            codeSnippet: "SELECT e.emp_name, d.dept_name\nFROM employees e\nINNER JOIN departments d ON e.dept_id = d.dept_id;",
+            sampleTestCase: "Concept: INNER JOIN Execution Plan"
+        },
+        {
+            id: 20,
+            title: "20. Microservices Circuit Breaker Pattern with Resilience4j",
+            topic: "System Design",
+            category: "Architecture",
+            difficulty: "Hard",
+            company: "CloudSphere",
+            questionText: "Explain how Circuit Breaker states (CLOSED, OPEN, HALF_OPEN) prevent cascading failures in microservices.",
+            answerExplanation: "Circuit Breakers monitor remote service calls. When failure threshold is breached, state transitions to OPEN, immediately returning fallback responses without overloading failing downstream services.",
+            codeSnippet: "// Resilience4j CircuitBreaker Annotation\n@CircuitBreaker(name = \"paymentService\", fallbackMethod = \"paymentFallback\")\npublic String processPayment() {\n    return \"Payment Success\";\n}",
+            sampleTestCase: "Concept: Resilience4j Circuit Breaker States"
+        },
+        {
+            id: 21,
+            title: "21. Self Introduction & Background Summary (HR Guide)",
+            topic: "Self Introduction",
+            category: "Behavioral",
+            difficulty: "Easy",
+            company: "Recruiter Guide",
+            questionText: "How to deliver a structured 90-second self introduction for Software Engineering interviews.",
+            answerExplanation: "Structure your intro using the ELEVATOR formula: Present Role & Core Skills -> Key Engineering Accomplishments -> Technical Strengths -> Alignment with the Company Target.",
+            codeSnippet: "// Structured Elevator Pitch\n\"Hello, I am Ramesh, a Full-Stack Software Engineer specializing in Java, Spring Boot, React, and SQL database architectures. Recently, I built an ATS Resume Scorer with automated candidate evaluation engines...\"",
+            sampleTestCase: "Concept: Professional HR Interview Intro"
+        },
+        {
+            id: 22,
+            title: "22. The 4 Pillars of Object-Oriented Programming (OOPs)",
+            topic: "OOPs Concepts",
+            category: "Conceptual",
+            difficulty: "Easy",
+            company: "Google",
+            questionText: "Explain Encapsulation, Abstraction, Inheritance, and Polymorphism with real-world Java code examples.",
+            answerExplanation: "Encapsulation hides internal state (private variables + getters/setters). Abstraction hides complex implementation details using interfaces/abstract classes. Inheritance allows code reusability (extends). Polymorphism allows method overriding and overloading.",
+            codeSnippet: "// Polymorphism & Inheritance Example\nabstract class Animal { abstract void makeSound(); }\nclass Dog extends Animal { void makeSound() { System.out.println(\"Bark\"); } }",
+            sampleTestCase: "Concept: OOPs 4 Pillars"
+        }
+    ];
+
+    function filterDefaultQuestions(topic, difficulty) {
+        return DEFAULT_INTERVIEW_QUESTIONS.filter(q => {
+            const matchesTopic = (!topic || topic === 'All' || q.topic.toLowerCase() === topic.toLowerCase() || (topic.includes('OOP') && q.topic.includes('OOP')) || (topic.includes('Self') && q.topic.includes('Self')));
+            const matchesDiff = (!difficulty || difficulty === 'All' || q.difficulty.toLowerCase() === difficulty.toLowerCase());
+            return matchesTopic && matchesDiff;
+        });
+    }
+
     // Technical Interview Questions Fetcher & Renderer
     async function fetchInterviewQuestions() {
-        const topic = interviewTopicSelect.value;
-        const difficulty = interviewDifficultySelect.value;
+        const topic = interviewTopicSelect ? interviewTopicSelect.value : 'All';
+        const difficulty = interviewDifficultySelect ? interviewDifficultySelect.value : 'All';
 
+        let questions = null;
         try {
             const res = await fetch(`${INTERVIEW_BASE}/questions?topic=${encodeURIComponent(topic)}&difficulty=${encodeURIComponent(difficulty)}`);
-            if (res.ok) {
-                interviewQuestionsCache = await res.json();
-                if (questionCountBadge) questionCountBadge.textContent = interviewQuestionsCache.length;
-                renderQuestions(interviewQuestionsCache);
+            const contentType = res.headers.get('content-type') || '';
+            if (res.ok && contentType.includes('application/json')) {
+                questions = await res.json();
             }
         } catch (err) {
-            console.warn('Could not fetch interview questions:', err);
+            console.warn('Backend questions API unavailable, using built-in questions dataset:', err);
         }
+
+        if (!questions || !Array.isArray(questions) || questions.length === 0) {
+            questions = filterDefaultQuestions(topic, difficulty);
+        }
+
+        interviewQuestionsCache = questions;
+        if (questionCountBadge) questionCountBadge.textContent = interviewQuestionsCache.length;
+        renderQuestions(interviewQuestionsCache);
     }
 
     function renderQuestions(list) {
