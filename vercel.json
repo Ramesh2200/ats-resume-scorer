@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "name": "ats-resume-scorer",
+  "cleanUrls": true,
+  "outputDirectory": "src/main/resources/static",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
