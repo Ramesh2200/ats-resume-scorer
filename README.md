@@ -15,8 +15,8 @@ The **ATS Resume Scorer** automates resume analysis against job descriptions to 
 - **Multi-Factor Scoring Engine**: Evaluates resume-to-job match using weighted scoring across Hard Skills (35%), Experience & Qualifications (25%), Soft Skills & Cultural Fit (20%), and Formatting/Readability (20%).
 - **Keyword & Skill Gap Analysis**: Highlights matched keywords and identifies critical missing hard & soft skills.
 - **Automated Interview Question Generator**: Dynamically generates targeted technical and situational interview questions tailored to the candidate's skill gaps.
+- **Resume Generation & One-Click Download**: Renders tailored highlighted HTML resumes and allows downloading formatted evaluation reports (`/api/ats/download/{id}`).
 - **Email & SMS Notifications**: Integrated with Gmail SMTP and Twilio for sending candidate evaluation reports directly via Email and SMS.
-- **Interactive UI & PDF Export**: Rich dark-mode dashboard with interactive charts, modal score breakdowns, and downloadable PDF evaluation reports.
 
 ---
 
@@ -36,9 +36,15 @@ The **ATS Resume Scorer** automates resume analysis against job descriptions to 
 
 ---
 
-## 📐 End-to-End System Architecture
+## 📐 Detailed Software System Architecture (Populated Backend & Frontend)
 
-![End-to-End System Architecture](docs/images/ats_system_architecture.png)
+![Detailed Software System Architecture](docs/images/ats_full_system_detailed.png)
+
+---
+
+## 📥 Resume Generation & Download Options Process
+
+![Resume Generation & Download Options Process](docs/images/ats_resume_generator_download.png)
 
 ---
 
@@ -91,11 +97,12 @@ The **ATS Resume Scorer** automates resume analysis against job descriptions to 
 | :--- | :--- | :--- | :--- |
 | `/api/ats/upload` | `POST` | `MultipartFile file` | Uploads PDF resume and extracts text & metadata |
 | `/api/ats/evaluate` | `POST` | `EvaluationRequest` | Runs full ATS multi-factor scoring algorithm |
+| `/api/ats/download/{id}` | `GET` | Path variable `id` | Downloads formatted resume report (`.txt`) |
 | `/api/ats/jobs` | `GET` | None | Retrieves all pre-loaded job description presets |
 | `/api/ats/jobs` | `POST` | `JobDescription` | Creates a new job posting preset |
 | `/api/ats/evaluations` | `GET` | None | Retrieves list of all past evaluations |
 | `/api/ats/evaluations/{id}` | `GET` | Path variable `id` | Retrieves single evaluation report details |
-| `/api/ats/evaluations/{id}/email` | `POST` | Query parameter `email` | Resends evaluation report to specified email |
+| `/api/ats/send-notification` | `POST` | `Map<String, String>` | Sends email & SMS notification to candidate |
 | `/api/interview/generate` | `POST` | `Map<String, String>` | Generates targeted interview questions |
 
 ---

@@ -1,80 +1,75 @@
-# 📐 ATS Resume Scorer - Complete Master Flow Diagrams & Architecture Document
+# 📐 ATS Resume Scorer - Master System Architecture, Flow Diagrams & Resume Downloader Document
 
-This document consolidates all **end-to-end flow diagrams, visual system architecture, database ERDs, data processing pipelines, and sequence charts** for the **ATS Resume Scorer & Interactive Viewer** project into a single master document.
-
----
-
-## 🎨 Table of Contents
-1. [End-to-End System Architecture Diagram](#1-end-to-end-system-architecture-diagram)
-2. [End-to-End Evaluation Workflow Process](#2-end-to-end-evaluation-workflow-process)
-3. [Database Schema & Entity Relationship Diagram (ERD)](#3-database-schema--entity-relationship-diagram-erd)
-4. [Component Interaction Flow Chart](#4-component-interaction-flow-chart)
-5. [End-to-End Sequence Diagram](#5-end-to-end-sequence-diagram)
-6. [Multi-Factor Scoring Engine Mathematical Model](#6-multi-factor-scoring-engine-mathematical-model)
+This document consolidates all **end-to-end flow diagrams, visual system architecture with populated backend/frontend fields, database ERDs, resume generation pipelines, and download option workflows** for the **ATS Resume Scorer & Interactive Viewer** project into a single master document.
 
 ---
 
-## 1. End-to-End System Architecture Diagram
+## 🎨 Master Visual Diagram Directory
 
-This high-level architecture diagram displays the complete tech stack integration:
-- **Frontend Layer**: Single Page Application (HTML5, CSS3, JavaScript ES6+)
-- **REST API & Backend Services**: Spring Boot 3 Controller layer (`AtsController`, `AuthController`, `InterviewController`)
-- **Document Parsing Engine**: Apache PDFBox library for binary PDF text extraction
-- **Scoring Logic**: `AtsScoringService` multi-factor analysis engine
-- **Persistence Layer**: Spring Data JPA with embedded H2 / MySQL database
-- **External Gateways**: Gmail SMTP email service and Twilio SMS notification API
-
-![1. End-to-End System Architecture](docs/images/ats_system_architecture.png)
+| Diagram Title | Description | Image Asset Link |
+| :--- | :--- | :--- |
+| **Detailed Software System Architecture** | Populated Frontend UI fields, Spring Boot REST controllers, Apache PDFBox, JPA Repositories, Database Schema | [`ats_full_system_detailed.png`](docs/images/ats_full_system_detailed.png) |
+| **Resume Generation & Download Options** | Process flow for tailored resume generation, highlighted keywords, score boost, & 1-click Download buttons | [`ats_resume_generator_download.png`](docs/images/ats_resume_generator_download.png) |
+| **End-to-End System Architecture** | Web Browser Client, Spring Boot API, ATS Scoring Engine, Database & Email/SMS Gateways | [`ats_system_architecture.png`](docs/images/ats_system_architecture.png) |
+| **End-to-End Evaluation Workflow** | 5-Step candidate resume upload, text extraction, multi-factor analysis, scoring & report delivery | [`ats_evaluation_workflow.png`](docs/images/ats_evaluation_workflow.png) |
+| **Database ERD Schema** | Relational schema tables (`users`, `job_descriptions`, `resumes`, `ats_evaluations`, `interview_questions`) | [`ats_database_schema.png`](docs/images/ats_database_schema.png) |
 
 ---
 
-## 2. End-to-End Evaluation Workflow Process
+## 1. Detailed Software System Architecture (Populated Backend & Frontend)
 
-This step-by-step workflow diagram details the 5 sequential phases of candidate resume scoring:
-1. **Resume Upload**: Candidate or HR recruiter uploads PDF resume file via web interface.
-2. **Text Extraction & Parsing**: Apache PDFBox extracts raw text, candidate name, email, and phone number.
-3. **Multi-Factor Analysis**: Compares extracted resume data against selected job requirements (Hard Skills, Soft Skills, Experience, Formatting).
-4. **Score Calculation & Match Percentage**: Assigns weighted scores and generates missing keyword gap lists.
-5. **Report & Notifications**: Saves evaluation record, renders visual dashboard, and sends email/SMS alerts.
+This diagram details all populated parameters, endpoints, and data fields across the application stack:
 
-![2. End-to-End Evaluation Workflow Process](docs/images/ats_evaluation_workflow.png)
+### Frontend SPA Layer
+- **Input Forms**: Resume File Upload (PDF/DOCX), Target Job Title, Requirements Text, Candidate Email/Phone, Shortlist Threshold (%).
+- **Interactive Score Gauges**: Overall Match Score (SVG Radial Gauge), Hard Skills (35%), Experience (25%), Soft Skills (20%), Formatting (20%).
+- **Resume Viewer & Actions**: Highlighted HTML resume view, Keyword pills (Matched/Missing), **Generate Tailored Resume** & **Download ATS Resume Report** buttons.
 
----
+### Backend API Controllers (`Spring Boot 3`)
+- `POST /api/ats/upload` - Parses PDF files using Apache PDFBox and extracts candidate metadata.
+- `POST /api/ats/evaluate` - Runs the 4-factor scoring algorithm and saves evaluation entities.
+- `GET /api/ats/download/{id}` - Returns downloadable formatted resume evaluation documents.
+- `POST /api/ats/send-notification` - Dispatches live or simulated Gmail SMTP emails & Twilio mobile SMS messages.
 
-## 3. Database Schema & Entity Relationship Diagram (ERD)
-
-This entity-relationship diagram shows the relational schema across all core database tables:
-- `USERS`: Stores account credentials and roles.
-- `JOB_DESCRIPTIONS`: Holds target job postings and requirements.
-- `RESUMES`: Stores candidate resume file information and extracted text.
-- `ATS_EVALUATIONS`: Contains overall score metrics, section sub-scores, and keyword gap analysis.
-- `INTERVIEW_QUESTIONS`: Stores AI-generated custom interview questions linked to evaluations.
-
-![3. Database Schema Diagram](docs/images/ats_database_schema.png)
+![1. Detailed Software System Architecture](docs/images/ats_full_system_detailed.png)
 
 ---
 
-## 4. Component Interaction Flow Chart
+## 2. Resume Generation & Download Options Process
 
-```mermaid
-graph TD
-    Client["💻 Web Browser Client (HTML/CSS/JS)"] -->|HTTP / JSON| Controller["🎮 AtsController / AuthController"]
-    Controller -->|File Upload| Parser["📄 ResumeParserService (Apache PDFBox)"]
-    Controller -->|Evaluate Request| Engine["🧠 AtsScoringService"]
-    
-    Parser -->|Raw Text & Metadata| Engine
-    Engine -->|DB Persistence| Repo["💾 JPA Repositories"]
-    Repo -->|JDBC Connection| DB[("🗄️ H2 / MySQL Database")]
-    
-    Engine -->|Send Email| Mail["📧 JavaMailSender (Gmail SMTP)"]
-    Engine -->|Send SMS| Twilio["📱 Twilio SMS API"]
-    
-    Controller -->|JSON Response| Client
-```
+This infographic shows the 4-step resume optimization, tailored generation, and multi-format download pipeline:
+
+1. **Input Resume & Job Meta**: Upload original resume (PDF/DOCX) and paste target job description.
+2. **AI Multi-Factor Analysis**: Extract skills, compute keyword frequency, and match against domain requirements.
+3. **Generated Resume Preview**: Render real-time highlighted HTML resume preview with matched technical keywords & ATS score boost.
+4. **Resume Options & Actions**:
+   - 📥 **Download Resume (TXT/PDF)**: Instantly download formatted resume report (`/api/ats/download/{id}`).
+   - 📧 **Email Report**: Dispatch summary report directly to candidate email via Gmail SMTP.
+   - 📱 **SMS Alert**: Send mobile SMS status alert via Twilio Gateway.
+
+![2. Resume Generation & Download Options Process](docs/images/ats_resume_generator_download.png)
 
 ---
 
-## 5. End-to-End Sequence Diagram
+## 3. High-Level End-to-End System Architecture
+
+![3. End-to-End System Architecture](docs/images/ats_system_architecture.png)
+
+---
+
+## 4. End-to-End Evaluation Workflow Process
+
+![4. End-to-End Evaluation Workflow Process](docs/images/ats_evaluation_workflow.png)
+
+---
+
+## 5. Database Schema & Entity Relationship Diagram (ERD)
+
+![5. Database Schema Diagram](docs/images/ats_database_schema.png)
+
+---
+
+## 6. End-to-End Sequence Diagram
 
 ```mermaid
 sequenceDiagram
@@ -102,11 +97,14 @@ sequenceDiagram
     Scorer->>Email: Send Summary Report Email
     Scorer-->>API: Return EvaluationResponse DTO
     API-->>SPA: Render Interactive Dashboard & Radial Gauges
+    User->>SPA: Click "Download Resume"
+    SPA->>API: GET /api/ats/download/{id}
+    API-->>User: File Attachment (Candidate_Resume.txt)
 ```
 
 ---
 
-## 6. Multi-Factor Scoring Engine Mathematical Model
+## 7. Multi-Factor Scoring Engine Mathematical Model
 
 $$\text{Overall ATS Score} = 0.35 \times S_{\text{hard}} + 0.25 \times S_{\text{exp}} + 0.20 \times S_{\text{soft}} + 0.20 \times S_{\text{format}}$$
 
