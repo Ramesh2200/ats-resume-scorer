@@ -109,6 +109,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const formLogin = document.getElementById('form-login');
     const formRegister = document.getElementById('form-register');
 
+    // Live Email Dispatch Modal Elements
+    const modalEmailDispatch = document.getElementById('modal-email-dispatch');
+    const modalEmailClose = document.getElementById('modal-email-close');
+    const modalEmailTo = document.getElementById('modal-email-to');
+    const modalEmailSubject = document.getElementById('modal-email-subject');
+    const modalEmailBody = document.getElementById('modal-email-body');
+    const btnModalSendGmail = document.getElementById('btn-modal-send-gmail');
+    const btnModalSendOutlook = document.getElementById('btn-modal-send-outlook');
+    const btnModalSendMailto = document.getElementById('btn-modal-send-mailto');
+    const btnModalCopyEmail = document.getElementById('btn-modal-copy-email');
+
     // Initialize Application
     initTheme();
     bindEvents();
@@ -241,10 +252,24 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
+        // Live Email Dispatch Modal Controls
+        if (modalEmailClose && modalEmailDispatch) {
+            modalEmailClose.addEventListener('click', () => modalEmailDispatch.classList.add('hidden'));
+            modalEmailDispatch.addEventListener('click', (e) => {
+                if (e.target === modalEmailDispatch) modalEmailDispatch.classList.add('hidden');
+            });
+        }
+
+        if (btnModalSendGmail) btnModalSendGmail.addEventListener('click', () => sendEmailViaProvider('gmail'));
+        if (btnModalSendOutlook) btnModalSendOutlook.addEventListener('click', () => sendEmailViaProvider('outlook'));
+        if (btnModalSendMailto) btnModalSendMailto.addEventListener('click', () => sendEmailViaProvider('mailto'));
+        if (btnModalCopyEmail) btnModalCopyEmail.addEventListener('click', copyModalEmailContent);
+
         // Keyboard ESC key to close
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && modalAuth && !modalAuth.classList.contains('hidden')) {
-                closeAuthModal();
+            if (e.key === 'Escape') {
+                if (modalAuth && !modalAuth.classList.contains('hidden')) closeAuthModal();
+                if (modalEmailDispatch && !modalEmailDispatch.classList.contains('hidden')) modalEmailDispatch.classList.add('hidden');
             }
         });
 
@@ -1405,46 +1430,56 @@ Bachelor of Science in Computer Science | University of California, Berkeley`;
         });
     }
 
-    async function dispatchCandidateEmail() {
-        const targetEmail = candidateEmailInput.value.trim() || (currentEvaluation && currentEvaluation.email) || 'alex.morgan@techmail.com';
+    function dispatchCandidateEmail() {
+        const targetEmail = candidateEmailInput.value.trim() || (currentEvaluation && currentEvaluation.email) || 'candidate@example.com';
         const targetSubject = (currentEvaluation && currentEvaluation.emailSubject) ? currentEvaluation.emailSubject : `🎉 Application Status Update`;
         const decisionStatus = (currentEvaluation && currentEvaluation.decisionStatus) ? currentEvaluation.decisionStatus : 'SHORTLISTED';
         const candidateName = candidateNameInput.value.trim() || (currentEvaluation && currentEvaluation.candidateName) || 'Candidate';
         const emailBodyText = (currentEvaluation && currentEvaluation.emailBody) ? currentEvaluation.emailBody : `Hello ${candidateName},\n\nWe have reviewed your application. Your status is: ${decisionStatus}.\n\nBest regards,\nTalent Acquisition`;
 
-        btnSendEmail.disabled = true;
-        btnSendEmail.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Dispatching Email...';
+        if (modalEmailTo) modalEmailTo.value = targetEmail;
+        if (modalEmailSubject) modalEmailSubject.value = targetSubject;
+        if (modalEmailBody) modalEmailBody.value = emailBodyText;
 
-        try {
-            const res = await fetch(`${API_BASE}/send-notification`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email: targetEmail,
-                    candidateName: candidateName,
-                    subject: targetSubject,
-                    emailBody: emailBodyText,
-                    decisionStatus: decisionStatus
-                })
-            });
-            const contentType = res.headers.get('content-type') || '';
-            if (res.ok && contentType.includes('application/json')) {
-                const data = await res.json();
-            }
-        } catch (err) {
-            console.warn('Backend notification API unavailable, processing in-app email dispatch:', err);
+        if (modalEmailDispatch) modalEmailDispatch.classList.remove('hidden');
+    }
+
+    function sendEmailViaProvider(provider) {
+        const toEmail = modalEmailTo ? modalEmailTo.value.trim() : 'candidate@example.com';
+        const subject = modalEmailSubject ? modalEmailSubject.value.trim() : 'Application Status Update';
+        const body = modalEmailBody ? modalEmailBody.value.trim() : 'Notification message...';
+
+        const encTo = encodeURIComponent(toEmail);
+        const encSub = encodeURIComponent(subject);
+        const encBody = encodeURIComponent(body);
+
+        if (provider === 'gmail') {
+            const url = `https://mail.google.com/mail/?view=cm&fs=1&to=${encTo}&su=${encSub}&body=${encBody}`;
+            window.open(url, '_blank');
+            showToastNotification(`📧 Gmail Compose Window Opened!\nTo: ${toEmail}\nClick 'Send' in Gmail to deliver email to inbox!`);
+        } else if (provider === 'outlook') {
+            const url = `https://outlook.live.com/mail/0/deeplink/compose?to=${encTo}&subject=${encSub}&body=${encBody}`;
+            window.open(url, '_blank');
+            showToastNotification(`📧 Outlook Compose Window Opened!\nTo: ${toEmail}\nClick 'Send' in Outlook to deliver email to inbox!`);
+        } else if (provider === 'mailto') {
+            const url = `mailto:${encTo}?subject=${encSub}&body=${encBody}`;
+            window.location.href = url;
+            showToastNotification(`📧 System Mail App Launched!\nTo: ${toEmail}`);
         }
 
-        btnSendEmail.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-        btnSendEmail.innerHTML = '<i class="fa-solid fa-circle-check"></i> Email Delivered Successfully!';
-        
-        showToastNotification(`📧 Candidate Notification Email Dispatched Successfully!\nTo: ${targetEmail}\nStatus: ${decisionStatus}\nMessage: "Hello ${candidateName}, Your status is ${decisionStatus}."`);
-        
-        setTimeout(() => {
-            btnSendEmail.style.background = '';
-            btnSendEmail.innerHTML = '<i class="fa-solid fa-envelope-circle-check"></i> Dispatch Email';
-            btnSendEmail.disabled = false;
-        }, 3000);
+        if (modalEmailDispatch) modalEmailDispatch.classList.add('hidden');
+    }
+
+    function copyModalEmailContent() {
+        const toEmail = modalEmailTo ? modalEmailTo.value.trim() : '';
+        const subject = modalEmailSubject ? modalEmailSubject.value.trim() : '';
+        const body = modalEmailBody ? modalEmailBody.value.trim() : '';
+
+        const fullText = `To: ${toEmail}\nSubject: ${subject}\n\n${body}`;
+        navigator.clipboard.writeText(fullText).then(() => {
+            showToastNotification(`📋 Email Content Copied to Clipboard!\nRecipient: ${toEmail}`);
+        });
+        if (modalEmailDispatch) modalEmailDispatch.classList.add('hidden');
     }
 
     async function dispatchCandidateSms() {

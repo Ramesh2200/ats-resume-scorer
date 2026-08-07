@@ -503,8 +503,57 @@
                 </div>
 
                 <button type="submit" class="btn-glow-primary btn-block"><i class="fa-solid fa-user-plus"></i> Register</button>
-                <button type="button" class="btn-secondary btn-block modal-cancel-btn" style="margin-top: 0.75rem;"><i class="fa-solid fa-xmark"></i> Cancel / Exit</button>
-            </form>
+        </div>
+    </div>
+
+    <!-- LIVE EMAIL DISPATCH MODAL -->
+    <div id="modal-email-dispatch" class="modal-overlay hidden">
+        <div class="modal-card glass-card animate-fade-in" style="max-width: 580px; width: 90%;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+                <h3 style="font-size: 1.1rem; color: var(--text-main); font-weight: 700; margin: 0;">
+                    <i class="fa-solid fa-paper-plane text-primary"></i> Live Candidate Email Dispatcher
+                </h3>
+                <button id="modal-email-close" style="background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="modal-body" style="display: flex; flex-direction: column; gap: 1rem;">
+                <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
+                    Deliver official ATS status report directly to recipient email inbox.
+                </div>
+
+                <div class="input-group-animated" style="margin-bottom: 0;">
+                    <input type="email" id="modal-email-to" required placeholder=" " value="candidate@example.com">
+                    <label for="modal-email-to"><i class="fa-solid fa-envelope"></i> Recipient Email Address</label>
+                </div>
+
+                <div class="input-group-animated" style="margin-bottom: 0;">
+                    <input type="text" id="modal-email-subject" required placeholder=" " value="🎉 Application Status Update">
+                    <label for="modal-email-subject"><i class="fa-solid fa-heading"></i> Email Subject</label>
+                </div>
+
+                <div>
+                    <label style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; display: block; margin-bottom: 0.3rem;"><i class="fa-solid fa-align-left"></i> Email Body Message:</label>
+                    <textarea id="modal-email-body" style="width: 100%; height: 110px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text-main); padding: 0.75rem; font-size: 0.82rem; font-family: var(--font-mono); resize: vertical; outline: none;"></textarea>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem;">
+                    <button id="btn-modal-send-gmail" class="btn-primary" style="justify-content: center; background: linear-gradient(135deg, #ea4335, #c5221f); padding: 0.65rem; font-weight: 700;">
+                        <i class="fa-brands fa-google"></i> Send via Gmail (Opens Inbox Compose)
+                    </button>
+                    
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button id="btn-modal-send-outlook" class="btn-secondary" style="flex: 1; justify-content: center; background: rgba(0, 120, 212, 0.15); border-color: rgba(0, 120, 212, 0.4); color: #60a5fa;">
+                            <i class="fa-solid fa-envelope-open-text"></i> Outlook
+                        </button>
+                        <button id="btn-modal-send-mailto" class="btn-secondary" style="flex: 1; justify-content: center;">
+                            <i class="fa-solid fa-envelope"></i> Mail App
+                        </button>
+                        <button id="btn-modal-copy-email" class="btn-secondary" style="flex: 1; justify-content: center;">
+                            <i class="fa-solid fa-copy"></i> Copy Text
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
