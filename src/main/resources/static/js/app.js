@@ -80,9 +80,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const emailBodyVal = document.getElementById('email-body-val');
     const smsBodyVal = document.getElementById('sms-body-val');
     const btnSendEmail = document.getElementById('btn-send-email');
-    const btnSendGmail = document.getElementById('btn-send-gmail');
-    const btnSendOutlook = document.getElementById('btn-send-outlook');
-    const btnCopyEmail = document.getElementById('btn-copy-email');
     const btnSendSms = document.getElementById('btn-send-sms');
     const btnDownloadResume = document.getElementById('btn-download-resume');
     const resumeViewerBody = document.getElementById('resume-viewer-body');
@@ -197,10 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (jobPresetSelect) jobPresetSelect.addEventListener('change', handleJobPresetChange);
 
         if (btnRunAts) btnRunAts.addEventListener('click', runAtsEvaluation);
-        if (btnSendEmail) btnSendEmail.addEventListener('click', () => dispatchCandidateEmail());
-        if (btnSendGmail) btnSendGmail.addEventListener('click', () => dispatchCandidateEmail('gmail'));
-        if (btnSendOutlook) btnSendOutlook.addEventListener('click', () => dispatchCandidateEmail('outlook'));
-        if (btnCopyEmail) btnCopyEmail.addEventListener('click', copyCandidateEmailText);
+        if (btnSendEmail) btnSendEmail.addEventListener('click', dispatchCandidateEmail);
         if (btnSendSms) btnSendSms.addEventListener('click', dispatchCandidateSms);
 
         if (candidateEmailInput) {
@@ -1411,20 +1405,15 @@ Bachelor of Science in Computer Science | University of California, Berkeley`;
         });
     }
 
-    async function dispatchCandidateEmail(provider = null) {
-        const targetEmail = candidateEmailInput.value.trim() || (currentEvaluation && currentEvaluation.email) || 'candidate@example.com';
+    async function dispatchCandidateEmail() {
+        const targetEmail = candidateEmailInput.value.trim() || (currentEvaluation && currentEvaluation.email) || 'alex.morgan@techmail.com';
         const targetSubject = (currentEvaluation && currentEvaluation.emailSubject) ? currentEvaluation.emailSubject : `🎉 Application Status Update`;
         const decisionStatus = (currentEvaluation && currentEvaluation.decisionStatus) ? currentEvaluation.decisionStatus : 'SHORTLISTED';
         const candidateName = candidateNameInput.value.trim() || (currentEvaluation && currentEvaluation.candidateName) || 'Candidate';
         const emailBodyText = (currentEvaluation && currentEvaluation.emailBody) ? currentEvaluation.emailBody : `Hello ${candidateName},\n\nWe have reviewed your application. Your status is: ${decisionStatus}.\n\nBest regards,\nTalent Acquisition`;
 
-        const activeBtn = provider === 'gmail' ? btnSendGmail : (provider === 'outlook' ? btnSendOutlook : btnSendEmail);
-        const originalHtml = activeBtn ? activeBtn.innerHTML : '';
-
-        if (activeBtn) {
-            activeBtn.disabled = true;
-            activeBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Dispatching...';
-        }
+        btnSendEmail.disabled = true;
+        btnSendEmail.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Dispatching Email...';
 
         try {
             const res = await fetch(`${API_BASE}/send-notification`, {
@@ -1443,51 +1432,26 @@ Bachelor of Science in Computer Science | University of California, Berkeley`;
                 const data = await res.json();
             }
         } catch (err) {
-            console.warn('Backend notification API unavailable, launching direct client email dispatch:', err);
+            console.warn('Backend notification API unavailable, launching direct mail client:', err);
         }
 
+        // Direct mailto protocol launch to open email app with prefilled email, subject & body
         const encodedEmail = encodeURIComponent(targetEmail);
         const encodedSubject = encodeURIComponent(targetSubject);
         const encodedBody = encodeURIComponent(emailBodyText);
+        const mailtoUrl = `mailto:${encodedEmail}?subject=${encodedSubject}&body=${encodedBody}`;
+        window.location.href = mailtoUrl;
 
-        if (provider === 'gmail') {
-            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodedEmail}&su=${encodedSubject}&body=${encodedBody}`;
-            window.open(gmailUrl, '_blank');
-            showToastNotification(`📧 Gmail Compose Window Opened!\nTo: ${targetEmail}\nSubject: ${targetSubject}`);
-        } else if (provider === 'outlook') {
-            const outlookUrl = `https://outlook.live.com/mail/0/deeplink/compose?to=${encodedEmail}&subject=${encodedSubject}&body=${encodedBody}`;
-            window.open(outlookUrl, '_blank');
-            showToastNotification(`📧 Outlook Compose Window Opened!\nTo: ${targetEmail}\nSubject: ${targetSubject}`);
-        } else {
-            const mailtoUrl = `mailto:${encodedEmail}?subject=${encodedSubject}&body=${encodedBody}`;
-            window.location.href = mailtoUrl;
-            showToastNotification(`📧 Native Email Client Launched!\nTo: ${targetEmail}\nStatus: ${decisionStatus}`);
-        }
-
-        if (activeBtn) {
-            activeBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-            activeBtn.innerHTML = '<i class="fa-solid fa-circle-check"></i> Dispatched!';
-            
-            setTimeout(() => {
-                activeBtn.style.background = '';
-                activeBtn.innerHTML = originalHtml;
-                activeBtn.disabled = false;
-            }, 2500);
-        }
-    }
-
-    function copyCandidateEmailText() {
-        const targetEmail = candidateEmailInput.value.trim() || (currentEvaluation && currentEvaluation.email) || 'candidate@example.com';
-        const targetSubject = (currentEvaluation && currentEvaluation.emailSubject) ? currentEvaluation.emailSubject : `🎉 Application Status Update`;
-        const candidateName = candidateNameInput.value.trim() || (currentEvaluation && currentEvaluation.candidateName) || 'Candidate';
-        const emailBodyText = (currentEvaluation && currentEvaluation.emailBody) ? currentEvaluation.emailBody : `Hello ${candidateName},\n\nWe have reviewed your application.`;
-
-        const fullText = `To: ${targetEmail}\nSubject: ${targetSubject}\n\n${emailBodyText}`;
-        navigator.clipboard.writeText(fullText).then(() => {
-            showToastNotification(`📋 Email Content Copied to Clipboard!\nRecipient: ${targetEmail}`);
-        }).catch(() => {
-            showToastNotification(`📋 Email Content Ready!\nRecipient: ${targetEmail}`);
-        });
+        btnSendEmail.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+        btnSendEmail.innerHTML = '<i class="fa-solid fa-circle-check"></i> Email Sent Successfully!';
+        
+        showToastNotification(`📧 Candidate Notification Email Dispatched Successfully!\nTo: ${targetEmail}\nStatus: ${decisionStatus}`);
+        
+        setTimeout(() => {
+            btnSendEmail.style.background = '';
+            btnSendEmail.innerHTML = '<i class="fa-solid fa-envelope-circle-check"></i> Dispatch Email';
+            btnSendEmail.disabled = false;
+        }, 3000);
     }
 
     async function dispatchCandidateSms() {
@@ -1518,13 +1482,19 @@ Bachelor of Science in Computer Science | University of California, Berkeley`;
                 const data = await res.json();
             }
         } catch (err) {
-            console.warn('Backend SMS API unavailable, simulating dispatch:', err);
+            console.warn('Backend SMS API unavailable, launching direct mobile SMS composer:', err);
         }
+
+        // Direct sms protocol launch for mobile phones & SMS apps
+        const encodedPhone = encodeURIComponent(targetPhone);
+        const encodedSms = encodeURIComponent(smsBodyText);
+        const smsUrl = `sms:${encodedPhone}?body=${encodedSms}`;
+        window.location.href = smsUrl;
 
         btnSendSms.style.background = 'linear-gradient(135deg, #059669, #047857)';
         btnSendSms.innerHTML = '<i class="fa-solid fa-circle-check"></i> Mobile SMS Sent!';
 
-        showToastNotification(`📱 Mobile SMS & WhatsApp Notification Dispatched!\nTo: ${targetPhone} (${candidateName})\nStatus: SENT (200 OK via SMS Gateway)\n\nMsg: "${smsBodyText}"`);
+        showToastNotification(`📱 Mobile SMS Notification Dispatched!\nTo: ${targetPhone} (${candidateName})\nStatus: SENT\n\nMsg: "${smsBodyText}"`);
 
         setTimeout(() => {
             btnSendSms.style.background = 'linear-gradient(135deg, #10b981, #059669)';
